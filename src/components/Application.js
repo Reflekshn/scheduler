@@ -3,12 +3,9 @@ import Button from "components/Button.js"
 
 
 import "components/Application.scss";
+import DayListItem from './DayListItem';
 
 export default function Application(props) {
-
-  const buttonClick = () => {
-    alert("The button was clicked!");
-  };
 
   return (
     <main className="layout">
@@ -28,6 +25,9 @@ export default function Application(props) {
       </section>
       <section className="schedule">
         <Button>Default</Button>
+      </section>
+      <section>
+        <DayListItem />
       </section>
     </main>
   );
