@@ -61,7 +61,7 @@ export default function Application() {
       interview: { ...interview },
     };
     
-    // Combine the new appointment with the ones already existing
+    // Combine the new appointment with the existing ones
     const appointments = {
       ...state.appointments,
       [id]: appointment,
@@ -74,6 +74,27 @@ export default function Application() {
         setState({ ...state, appointments });
       })
   };
+
+  // Function to delete a booked interview
+  const cancelInterview = (id) => {
+    return axios.delete(`api/appointments/${id}`)
+      .then(() => {
+        // Create an appointment object using the selected id and set the interview to null
+        const appointment = {
+          ...state.appointments[id],
+          interview: null
+        };
+
+        // Combine the deleted appointment with the existing ones
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment
+        };
+
+        // Update the appointments list in the state object
+        setState({...state, appointments});
+      })
+  }
 
   // Retrieve appointments and interviewers for the currently selected day
   const appointments = getAppointmentsForDay(state, state.day);
@@ -91,6 +112,7 @@ export default function Application() {
         interview={interview}
         interviewers={dailyInterviewers}
         bookInterview={bookInterview}
+        cancelInterview={cancelInterview}
       />
     );
   });
