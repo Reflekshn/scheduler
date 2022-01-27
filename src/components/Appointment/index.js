@@ -2,12 +2,12 @@ import React from 'react';
 import Header from './Header';
 import Show from './Show';
 import Empty from './Empty';
+import Form from './Form';
 import Status from './Status';
 import Confirm from './Confirm';
 import useVisualMode from 'components/hooks/useVisualMode';
 
 import 'components/Appointment/styles.scss';
-import Form from './Form';
 
 export default function Appointment(props) {
   // Constants for the various mode states of the Appointment component
@@ -16,6 +16,7 @@ export default function Appointment(props) {
   const CREATE = 'CREATE';
   const SAVING = 'SAVING';
   const DELETING = 'DELETING';
+  const EDIT = 'EDIT';
   const CONFIRM = 'CONFIRM';
 
   // Set initial mode state depening on whether an interview is booked or not
@@ -57,23 +58,31 @@ export default function Appointment(props) {
     <article className="appointment">
       <Header time={props.time} />
       {mode === 'EMPTY' && <Empty onAdd={() => transition(CREATE)} />}
-      {mode === 'SHOW' && (
+      {mode === 'SHOW' &&
         <Show
           id={props.id}
           student={props.interview.student}
           interviewer={props.interview.interviewer.name}
           onDelete={() => transition(CONFIRM)}
+          onEdit={() => transition(EDIT)}
         />
-      )}
-      {mode === 'CREATE' && (
+      }
+      {mode === 'CREATE' && 
         <Form
           interviewers={props.interviewers}
           onCancel={() => back()}
           onSave={save}
-          student={props.interview ? props.interview.student : null}
-          interviewer={props.interview ? props.interviewer.id : null}
         />
-      )}
+      }
+      {mode === 'EDIT' &&
+        <Form
+          student={props.interview.student}
+          interviewers={props.interviewers}
+          interviewer={props.interview.interviewer.id}
+          onSave={save}
+          onCancel={() => back()}
+        />
+      }
       {mode === 'SAVING' && <Status message={'Saving'} />}
       {mode === 'DELETING' && <Status message={'Deleting'} />}
       {mode === 'CONFIRM' &&
