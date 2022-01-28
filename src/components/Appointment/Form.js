@@ -18,6 +18,8 @@ export default function Form(props) {
   // Reset the state variables and call back() to transition the mode to the previous state
   const cancel = () => {
     reset();
+    setStudentError('');
+    setInterviewerError('');
     props.onCancel();
   };
 
