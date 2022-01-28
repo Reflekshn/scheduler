@@ -5,6 +5,7 @@ import Empty from './Empty';
 import Form from './Form';
 import Status from './Status';
 import Confirm from './Confirm';
+import Error from './Error';
 import useVisualMode from 'components/hooks/useVisualMode';
 
 import 'components/Appointment/styles.scss';
@@ -18,6 +19,8 @@ export default function Appointment(props) {
   const DELETING = 'DELETING';
   const EDIT = 'EDIT';
   const CONFIRM = 'CONFIRM';
+  const ERROR_SAVE = 'ERROR_SAVE';
+  const ERROR_DELETE = 'ERROR_DELETE';
 
   // Set initial mode state depening on whether an interview is booked or not
   let { mode, transition, back } = useVisualMode(
@@ -32,13 +35,16 @@ export default function Appointment(props) {
       student: name,
       interviewer,
     };
+
     // Transition to the intermediate "Saving..." mode state
     transition(SAVING);
+
     // Save the interview in the database API and transition to the SHOW mode once
-    // completed
+    // completed. Display error message if the API request fails, and return to the
+    // previous mode state.
     props.bookInterview(props.id, interview)
       .then(() => transition(SHOW))
-      .catch((error) => console.log(error));
+      .catch((error) => transition(ERROR_SAVE, true));
   };
 
   // Function to delete a currently booked interview when the delete button is clicked
@@ -47,10 +53,11 @@ export default function Appointment(props) {
     transition(DELETING, true);
 
     // Remove the interview from the database API and transition to the EMPTY mode once
-    // completed
+    // completed. Display error message if the API request fails, and return to the
+    // previous mode state.
     props.cancelInterview(id)
       .then(() => transition(EMPTY))
-      .catch((error) => console.log(error))
+      .catch((error) => transition(ERROR_DELETE, true));
   };
 
   // Display the Appointment Component conditionally dependent on the mode state
@@ -65,15 +72,13 @@ export default function Appointment(props) {
           interviewer={props.interview.interviewer.name}
           onDelete={() => transition(CONFIRM)}
           onEdit={() => transition(EDIT)}
-        />
-      }
-      {mode === 'CREATE' && 
+        />}
+      {mode === 'CREATE' &&
         <Form
           interviewers={props.interviewers}
           onCancel={() => back()}
           onSave={save}
-        />
-      }
+        />}
       {mode === 'EDIT' &&
         <Form
           student={props.interview.student}
@@ -81,15 +86,24 @@ export default function Appointment(props) {
           interviewer={props.interview.interviewer.id}
           onSave={save}
           onCancel={() => back()}
-        />
-      }
+        />}
       {mode === 'SAVING' && <Status message={'Saving'} />}
       {mode === 'DELETING' && <Status message={'Deleting'} />}
       {mode === 'CONFIRM' &&
         <Confirm
-          message={"Are you sure you would like to delete?"}
+          message={'Are you sure you would like to delete?'}
           onCancel={() => back()}
           onConfirm={() => deleteInterview(props.id)}
+        />}
+      {mode === 'ERROR_SAVE' &&
+        <Error
+          message={'Error: Could not save appointment'}
+          onClose={() => back()}
+        />}
+      {mode === 'ERROR_DELETE' &&
+        <Error
+          message={'Error: Could not delete appointment'}
+          onClose={() => back()}
         />}
     </article>
   );
