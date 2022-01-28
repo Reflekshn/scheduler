@@ -1,3 +1,4 @@
+// Import required components, styles, and custom hook
 import React from 'react';
 import Header from './Header';
 import Show from './Show';

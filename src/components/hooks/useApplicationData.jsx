@@ -43,48 +43,51 @@ export default function useApplicationData() {
   // Alias state setter function to modify Day state in child components
   const setDay = (day) => setState((prev) => ({ ...prev, day }));
 
+  /////////////////////////////////////////////////////////////////////////////
   // Function to save new interview when created in the Form Component
+  /////////////////////////////////////////////////////////////////////////////
   const bookInterview = (id, interview) => {
     // Create the new individual appointment object
     const appointment = {
       ...state.appointments[id],
       interview: { ...interview },
     };
-    
+
     // Combine the new appointment with the existing ones
     const appointments = {
       ...state.appointments,
       [id]: appointment,
     };
-    
+
     // Make an API put request to update the database with the new appointment
-    return axios.put(`/api/appointments/${id}`, appointment)
-      .then(() => {
-        // Then update the appointments list in the state object
-        setState({ ...state, appointments });
-      })
+    return axios.put(`/api/appointments/${id}`, appointment).then(() => {
+      // Update the appointments list in the state object
+      setState({ ...state, appointments });
+    });
   };
 
+  /////////////////////////////////////////////////////////////////////////////
   // Function to delete a booked interview
+  /////////////////////////////////////////////////////////////////////////////
   const cancelInterview = (id) => {
-    return axios.delete(`api/appointments/${id}`)
-      .then(() => {
-        // Create an appointment object using the selected id and set the interview to null
-        const appointment = {
-          ...state.appointments[id],
-          interview: null
-        };
+    return axios.delete(`api/appointments/${id}`).then(() => {
+      // Create an appointment object using the selected id and set the interview to null
+      const appointment = {
+        ...state.appointments[id],
+        interview: null,
+      };
 
-        // Combine the deleted appointment with the existing ones
-        const appointments = {
-          ...state.appointments,
-          [id]: appointment
-        };
+      // Combine the deleted appointment with the existing ones
+      const appointments = {
+        ...state.appointments,
+        [id]: appointment,
+      };
 
-        // Update the appointments list in the state object
-        setState({...state, appointments});
-      })
-  }
+      // Update the appointments list in the state object
+      setState({ ...state, appointments });
+    });
+  };
 
+  // Return state and functions to be used in our Application Component
   return { state, setDay, bookInterview, cancelInterview };
 }
