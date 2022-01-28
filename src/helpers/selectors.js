@@ -7,16 +7,16 @@ export function getAppointmentsForDay(state, day) {
     return [];
   }
 
-  // Find the specific day requested
-  const filteredDay = state.days.find((currentDay) => currentDay.name === day);
+  // Find the current day requested
+  const currDay = state.days.find((elem) => elem.name === day);
 
   // Return an empty array if the day is not found
-  if (!filteredDay) {
+  if (!currDay) {
     return [];
   }
 
   // Create an array of all the appointments for the requested day
-  const appointmentsForDay = filteredDay.appointments.map(
+  const appointmentsForDay = currDay.appointments.map(
     (id) => state.appointments[id]
   );
 
@@ -53,15 +53,15 @@ export function getInterviewersForDay(state, day) {
   }
 
   // Find the specific day requested
-  const filteredDay = state.days.find((currentDay) => currentDay.name === day);
+  const currDay = state.days.find((elem) => elem.name === day);
 
   // Return an empty array if the day is not found
-  if (!filteredDay) {
+  if (!currDay) {
     return [];
   }
 
   // Create an array of all the interviewers available on the requested day
-  const interviewersForDay = filteredDay.interviewers.map((id) => state.interviewers[id] )
+  const interviewersForDay = currDay.interviewers.map((id) => state.interviewers[id] )
 
   return interviewersForDay;
 }
