@@ -44,25 +44,48 @@ export default function useApplicationData() {
   const setDay = (day) => setState((prev) => ({ ...prev, day }));
 
   /////////////////////////////////////////////////////////////////////////////
+  // Function to calculate available appointment spots for a given day
+  /////////////////////////////////////////////////////////////////////////////
+  function updateSpots(day, appointments) {
+    let counter = 0;
+    day.appointments.forEach((id) => {
+      if (appointments[id].interview === null) {
+        counter++;
+      }
+    });
+    return counter;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // Function to save new interview when created in the Form Component
   /////////////////////////////////////////////////////////////////////////////
   const bookInterview = (id, interview) => {
-    // Create the new individual appointment object
+    // Create a new booked appointment object
     const appointment = {
       ...state.appointments[id],
       interview: { ...interview },
     };
 
-    // Combine the new appointment with the existing ones
+    // Copy the appointments list and add the updated one
     const appointments = {
       ...state.appointments,
       [id]: appointment,
     };
 
-    // Make an API put request to update the database with the new appointment
+    // Copy the days list and update the available appointment spots
+    // for the currently selected day
+    const days = state.days.map((day) => {
+      if (day.name === state.day) {
+        return { ...day, spots: updateSpots(day, appointments) };
+      } else {
+        return { ...day };
+      }
+    });
+
+    // Make an API put request to update the database
     return axios.put(`/api/appointments/${id}`, appointment).then(() => {
-      // Update the appointments list in the state object
-      setState({ ...state, appointments });
+      // Update the appointments and days lists in the state object
+      setState({ ...state, appointments, days });
     });
   };
 
@@ -70,21 +93,32 @@ export default function useApplicationData() {
   // Function to delete a booked interview
   /////////////////////////////////////////////////////////////////////////////
   const cancelInterview = (id) => {
+    // Create a new appointment object without a booked interview
+    const appointment = {
+      ...state.appointments[id],
+      interview: null,
+    };
+
+    // Copy the appointments list and add the updated one
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment,
+    };
+
+    // Copy the days list and update the available appointment spots
+    // for the currently selected day
+    const days = state.days.map((day) => {
+      if (day.name === state.day) {
+        return { ...day, spots: updateSpots(day, appointments) };
+      } else {
+        return { ...day };
+      }
+    });
+
+    // Make an API delete request to update the database
     return axios.delete(`api/appointments/${id}`).then(() => {
-      // Create an appointment object using the selected id and set the interview to null
-      const appointment = {
-        ...state.appointments[id],
-        interview: null,
-      };
-
-      // Combine the deleted appointment with the existing ones
-      const appointments = {
-        ...state.appointments,
-        [id]: appointment,
-      };
-
-      // Update the appointments list in the state object
-      setState({ ...state, appointments });
+      // Update the appointments and days lists in the state object
+      setState({ ...state, appointments, days });
     });
   };
 
