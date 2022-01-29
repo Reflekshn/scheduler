@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Appointments', () => {
   beforeEach(() => {
     cy.request('GET', '/api/debug/reset');
