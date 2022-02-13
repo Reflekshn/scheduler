@@ -1,7 +1,9 @@
 # Interview Scheduler
 
 Interview Scheduler is a Single-Page App built with React that allows a user to book, edit and delete interviews for a specific day and time.
-This is the client application, which interacts with Scheduler-API that runs our PostgreSQL database server using Express and WebSockets.
+This is the client application, which interacts with Scheduler-API that runs our PostgreSQL database server using Express and WebSockets for real-time updating.
+
+Testing was also incorporated using the JEST library for unit integration tests and Cypress was used for end to end testing.
 
 ## Final Product
 
@@ -43,3 +45,8 @@ npm test
 ```sh
 npm run storybook
 ```
+
+## Setting up the DB API Server
+
+Fork and clone the [Scheduler-API](https://github.com/Reflekshn/scheduler-api) project and follow the instructions in the provided README.md
+to setup and connect to the database server.
